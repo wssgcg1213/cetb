@@ -18,7 +18,7 @@
       "user" : "wssgcg1213",//登录账号
       "host" : "103.238.224.45",//服务器地址
       "ref"  : "origin/master",//git 分支
-      "repo" : "git@github.com:cetb.git",//git地址
+      "repo" : "https://github.com/wssgcg1213/cetb.git",//git地址
       "path" : "/home/wssgcg1213/cetb",//服务器项目目录
       "post-deploy" : "pm2 startOrRestart pm2.json --env production"
     }
