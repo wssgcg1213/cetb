@@ -20,7 +20,11 @@
       "ref"  : "origin/master",//git 分支
       "repo" : "https://github.com/wssgcg1213/cetb.git",//git地址
       "path" : "/home/wssgcg1213/cetb",//服务器项目目录
-      "post-deploy" : "~/.nvm/nvm-exec use 4.2.2 && npm run compile && pm2 startOrRestart pm2.json --env production"
+      "post-deploy" : "~/.nvm/nvm-exec use 4.2.2 && npm run compile && pm2 startOrRestart pm2.json --env production",
+      "pre-deploy-local": "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\"",
+      "env": {
+        "NVM_DIR": "/home/wssgcg1213/.nvm"
+      }
     }
   }
 }
