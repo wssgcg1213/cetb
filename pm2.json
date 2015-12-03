@@ -20,7 +20,7 @@
       "ref"  : "origin/master",//git 分支
       "repo" : "https://github.com/wssgcg1213/cetb.git",//git地址
       "path" : "/home/wssgcg1213/cetb",//服务器项目目录
-      "post-deploy" : "source ~/.bash_rc && npm run compile && pm2 startOrRestart pm2.json --env production"
+      "post-deploy" : "source ~/.bashrc && npm run compile && pm2 startOrRestart pm2.json --env production"
     }
   }
 }
