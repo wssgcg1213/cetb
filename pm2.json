@@ -14,13 +14,21 @@
     }
   }],
   "deploy" : {
-    "production" : {
+    "pre" : {
       "user" : "wssgcg1213",//登录账号
       "host" : "202.202.43.41",//服务器地址
       "ref"  : "origin/master",//git 分支
       "repo" : "https://github.com/wssgcg1213/cetb.git",//git地址
       "path" : "/home/wssgcg1213/cetb",//服务器项目目录
-      "post-deploy" : "npm run compile && pm2 startOrRestart pm2.json --env production"
+      "post-deploy" : "npm run compile && pm2 startOrGracefulReload pm2.json --env production"
+    },
+    "production" : {
+      "user" : "ling",//登录账号
+      "host" : "115.159.82.12",//服务器地址
+      "ref"  : "origin/master",//git 分支
+      "repo" : "https://github.com/wssgcg1213/cetb.git",//git地址
+      "path" : "/home/ling/cetb",//服务器项目目录
+      "post-deploy" : "npm run compile && pm2 startOrGracefulReload pm2.json --env production"
     }
   }
 }

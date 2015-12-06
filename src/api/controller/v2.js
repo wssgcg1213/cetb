@@ -9,7 +9,7 @@ import Base from './base.js';
 const rc4Pwd = "合作请联系i@zeroling.com ";
 
 export default class extends Base {
-  
+
   /**
    * index action
    * 不允许访问

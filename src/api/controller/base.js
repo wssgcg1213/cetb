@@ -5,6 +5,8 @@ import iconv from 'iconv-lite';
 import cheerio from 'cheerio';
 
 const searchUrl = 'http://find.cet.99sushe.com/search';
+const cacheEnable = (think.config('cache') || {useCache: false})['useCache'];
+
 async function api99Sushe(name, ticket) {
   const url = "http://cet.99sushe.com/find";
   let nameGBK = iconv.encode(name.slice(0, 2), 'gbk')
@@ -72,7 +74,9 @@ async function apiChsi(name, ticket) {
     return false;
   }
 }
-
+let apiSources = [
+  api99Sushe, apiChsi
+];
 
 export default class extends think.controller.base {
   /**
@@ -96,24 +100,43 @@ export default class extends think.controller.base {
    * @returns {string}
      */
   async noTicketQuery(cetType, name, school) {
+    let ticketCacheKey = `ticket-${cetType}-${name}-${school}`;
+    if (cacheEnable) {
+      let cachedTicket = await this.cache(ticketCacheKey);
+      if (cachedTicket) {
+        return cachedTicket;
+      }
+    }
     let bodyBuf = await request({
       method: 'POST',
       url: searchUrl,
       encoding: null,
       body: cet.getEncryptReqBody(cetType, school, name)
     });
-    return cet.decryptResBody(bodyBuf).toString();
+    let ret = cet.decryptResBody(bodyBuf).toString();
+    cacheEnable && this.cache(ticketCacheKey, ret);
+    return ret;
   }
 
   /**
-   *
+   * 选择具体的源
    * @param name
    * @param ticket
    * @returns {{reading: number, listening: number, writing: number, all: number}}
      */
   async queryGrade(name, ticket) {
-    //let choose = Math.floor(Math.random() * apis.length);
-    return await apiChsi(name, ticket);
+    let choose = Math.floor(Math.random() * apiSources.length);
+    let _api = apiSources[choose];
+    let gradeCacheKey = `grade-${name}-${ticket}`;
+    if (cacheEnable) {
+      let cachedGrade = await this.cache(gradeCacheKey);
+      if (cachedGrade) {
+        return cachedGrade;
+      }
+    }
+    let ret = await _api(name, ticket);
+    cacheEnable && this.cache(gradeCacheKey, ret);
+    return ret;
   }
 
   rc4 (data, key) {
