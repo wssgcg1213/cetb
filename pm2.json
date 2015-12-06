@@ -14,7 +14,7 @@
     }
   }],
   "deploy" : {
-    "pre" : {
+    "pre" : {//预发布环境
       "user" : "wssgcg1213",//登录账号
       "host" : "202.202.43.41",//服务器地址
       "ref"  : "origin/master",//git 分支
@@ -22,7 +22,7 @@
       "path" : "/home/wssgcg1213/cetb",//服务器项目目录
       "post-deploy" : "npm run compile && pm2 startOrGracefulReload pm2.json --env production"
     },
-    "production" : {
+    "production" : {//生产环境
       "user" : "wssgcg1213",//登录账号
       "host" : "115.159.82.12",//服务器地址
       "ref"  : "origin/master",//git 分支
