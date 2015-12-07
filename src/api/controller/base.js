@@ -103,7 +103,7 @@ export default class extends think.controller.base {
     let ticketCacheKey = `ticket-${cetType}-${name}-${school}`;
     if (cacheEnable) {
       let cachedTicket = await this.cache(ticketCacheKey);
-      if (cachedTicket) {
+      if (cachedTicket && cachedTicket.length === 15) {
         return cachedTicket;
       }
     }
@@ -114,7 +114,10 @@ export default class extends think.controller.base {
       body: cet.getEncryptReqBody(cetType, school, name)
     });
     let ret = cet.decryptResBody(bodyBuf).toString();
-    cacheEnable && this.cache(ticketCacheKey, ret);
+
+    if (cacheEnable && ret) {
+      await this.cache(ticketCacheKey, ret); //这里等他缓存了再给 不然大量的流量一进来 前面一些都没缓存
+    }
     return ret;
   }
 
@@ -135,7 +138,10 @@ export default class extends think.controller.base {
       }
     }
     let ret = await _api(name, ticket);
-    cacheEnable && this.cache(gradeCacheKey, ret);
+
+    if (cacheEnable && ret) {
+      await this.cache(gradeCacheKey, ret); //这里等他缓存了再给 不然大量的流量一进来 前面一些都没缓存
+    }
     return ret;
   }
 
