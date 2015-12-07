@@ -4,6 +4,8 @@ import request from 'request-promise';
 import iconv from 'iconv-lite';
 import cheerio from 'cheerio';
 
+let modelNoTicket = think.model('no_ticket', think.config('db')),
+    modelCet = think.model('cet', think.config('db'));
 const searchUrl = 'http://find.cet.99sushe.com/search';
 const cacheEnable = (think.config('cache') || {useCache: false})['useCache'];
 
@@ -100,25 +102,45 @@ export default class extends think.controller.base {
    * @returns {string}
      */
   async noTicketQuery(cetType, name, school) {
-    let ticketCacheKey = `ticket-${cetType}-${name}-${school}`;
+    const ticketCacheKey = `ticket-${cetType}-${name}-${school}`;
     if (cacheEnable) {
       let cachedTicket = await this.cache(ticketCacheKey);
       if (cachedTicket && cachedTicket.length === 15) {
         return cachedTicket;
       }
     }
+
+    let dbData = await modelNoTicket.where({name: name, school: school, cetType: cetType}).find();
+    let id = dbData && dbData.id;
+    if (dbData && dbData.ticket) {
+      if (cacheEnable) {
+        await this.cache(ticketCacheKey, dbData.ticket);
+      }
+      return dbData.ticket;
+    }
+
     let bodyBuf = await request({
       method: 'POST',
       url: searchUrl,
       encoding: null,
       body: cet.getEncryptReqBody(cetType, school, name)
     });
-    let ret = cet.decryptResBody(bodyBuf).toString();
+    let ticket = cet.decryptResBody(bodyBuf).toString();
 
-    if (cacheEnable && ret) {
-      await this.cache(ticketCacheKey, ret); //这里等他缓存了再给 不然大量的流量一进来 前面一些都没缓存
+    if (ticket && ticket.length === 15) {
+      if (cacheEnable) {
+        await this.cache(ticketCacheKey, ticket);
+      }
+      if (id) {
+        await modelNoTicket.where({id: id}).update({name: name, school: school, cetType: cetType, ticket: ticket});
+      } else {
+        await modelNoTicket.add({name: name, school: school, cetType: cetType, ticket: ticket});
+      }
+
+      return ticket;
+    } else {
+      return false;
     }
-    return ret;
   }
 
   /**
@@ -127,22 +149,54 @@ export default class extends think.controller.base {
    * @param ticket
    * @returns {{reading: number, listening: number, writing: number, all: number}}
      */
-  async queryGrade(name, ticket) {
-    let choose = Math.floor(Math.random() * apiSources.length);
-    let _api = apiSources[choose];
-    let gradeCacheKey = `grade-${name}-${ticket}`;
+  async queryGrade(name, school, ticket) {
+    //cache
+    const gradeCacheKey = `grade-${name}-${ticket}`;
     if (cacheEnable) {
       let cachedGrade = await this.cache(gradeCacheKey);
       if (cachedGrade) {
         return cachedGrade;
       }
     }
-    let ret = await _api(name, ticket);
 
-    if (cacheEnable && ret) {
-      await this.cache(gradeCacheKey, ret); //这里等他缓存了再给 不然大量的流量一进来 前面一些都没缓存
+    //database
+    let dbData = await modelCet.where({ticket: ticket}).find();
+    let gradeObj = {
+      all: dbData && dbData.all,
+      reading: dbData && dbData.reading,
+      writing: dbData && dbData.writing,
+      listening: dbData && dbData.listening
+    };
+    if (dbData && dbData.all != null) {
+      if (cacheEnable) {
+        await this.cache(gradeCacheKey, gradeObj);
+      }
+      return gradeObj;
     }
-    return ret;
+
+    //remote
+    let choose = Math.floor(Math.random() * apiSources.length);
+    let _api = apiSources[choose];
+    let remoteGradeObj = await _api(name, ticket);
+
+    if (remoteGradeObj && remoteGradeObj.all != null) {
+      if (cacheEnable) {
+        await this.cache(gradeCacheKey, remoteGradeObj);
+      }
+      await modelCet.add({
+        ticket: ticket,
+        name: name,
+        all: remoteGradeObj.all,
+        listening: remoteGradeObj.listening,
+        reading: remoteGradeObj.reading,
+        writing: remoteGradeObj.writing,
+        school: school
+      });
+
+      return remoteGradeObj;
+    } else {
+      return false;
+    }
   }
 
   rc4 (data, key) {

@@ -8,6 +8,7 @@
 import Base from './base.js';
 const rc4Pwd = "合作请联系i@zeroling.com ";
 
+
 export default class extends Base {
 
   /**
@@ -71,7 +72,7 @@ export default class extends Base {
         return this.fail('TICKET_NOT_FOUND');
       }
 
-      grade = await this.queryGrade(name, ticket);
+      grade = await this.queryGrade(name, school, ticket);
     } catch(e) {
       console.log("错误!", e);
       this.fail("INTERNAL_ERROR");
