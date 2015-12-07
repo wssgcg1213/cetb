@@ -46,9 +46,9 @@ export default class extends Base {
    * @return 考试成绩
    */
   async noticketAction () {
-    let name = this.post('name'),
-        school = this.post('school'),
-        cetType = this.post('cetType') || 1;//1 = CET4, 2 = CET6
+    let name = this.post('name').replace("\b", ''),
+        school = this.post('school').replace("\b", ''),
+        cetType = this.post('cetType').replace("\b", '') || 1;//1 = CET4, 2 = CET6
 
     //name = this.rc4(name, rc4Pwd);
     //school = this.rc4(school, rc4Pwd);

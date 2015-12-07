@@ -4,8 +4,6 @@ import request from 'request-promise';
 import iconv from 'iconv-lite';
 import cheerio from 'cheerio';
 
-let modelNoTicket = think.model('no_ticket', think.config('db')),
-    modelCet = think.model('cet', think.config('db'));
 const searchUrl = 'http://find.cet.99sushe.com/search';
 const cacheEnable = (think.config('cache') || {useCache: false})['useCache'];
 
@@ -110,6 +108,7 @@ export default class extends think.controller.base {
       }
     }
 
+    let modelNoTicket = this.model('no_ticket');
     let dbData = await modelNoTicket.where({name: name, school: school, cetType: cetType}).find();
     let id = dbData && dbData.id;
     if (dbData && dbData.ticket) {
@@ -160,6 +159,7 @@ export default class extends think.controller.base {
     }
 
     //database
+    let modelCet = this.model('cet');
     let dbData = await modelCet.where({ticket: ticket}).find();
     let gradeObj = {
       all: dbData && dbData.all,

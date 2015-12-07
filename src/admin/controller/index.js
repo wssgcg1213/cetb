@@ -1,5 +1,4 @@
 'use strict';
-
 import Base from './base.js';
 
 export default class extends Base {
@@ -8,7 +7,7 @@ export default class extends Base {
    * @return {Promise} []
    */
   indexAction() {
-    console.log(this.config());
+    //console.log(config.mailAccount, config.mailPassword);
     //auto render template file index_index.html
     return this.display();
   }
