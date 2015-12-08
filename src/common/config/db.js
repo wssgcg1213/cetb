@@ -12,18 +12,7 @@ export default {
   pwd: 'local',
   prefix: '',
   encoding: 'utf8',
-  connectionLimit: 10,
   nums_per_page: 10,
   log_sql: true,
-  log_connect: true,
-  cache: {
-    on: true,
-    type: 'redis',
-    timeout: 3600
-  },
-  adapter: {
-    redis: {
-      prefix: "cetb_"
-    }
-  }
+  log_connect: true
 };

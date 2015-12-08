@@ -6,8 +6,10 @@ import cheerio from 'cheerio';
 
 const searchUrl = 'http://find.cet.99sushe.com/search';
 const cacheEnable = (think.config('cache') || {useCache: false})['useCache'];
+const nth = think.config().nth;
 
 async function api99Sushe(name, ticket) {
+  console.log("remote api call through 99Sushe", name, ticket);
   const url = "http://cet.99sushe.com/find";
   let nameGBK = iconv.encode(name.slice(0, 2), 'gbk')
       .toJSON().data
@@ -42,6 +44,7 @@ async function api99Sushe(name, ticket) {
   }
 }
 async function apiChsi(name, ticket) {
+  console.log("remote api call through chsi.com.cn", name, ticket);
   const _url = `http://www.chsi.com.cn/cet/query?zkzh=${ticket}&xm=${encodeURIComponent(name.slice(0, 3))}`;
   const bodyBuf = await request({
     uri:_url,
@@ -103,13 +106,13 @@ export default class extends think.controller.base {
     const ticketCacheKey = `ticket-${cetType}-${name}-${school}`;
     if (cacheEnable) {
       let cachedTicket = await this.cache(ticketCacheKey);
-      if (cachedTicket && cachedTicket.length === 15) {
+      if (cachedTicket && cachedTicket.length === 15 && cachedTicket.substr(6, 3) == nth) {
         return cachedTicket;
       }
     }
 
     let modelNoTicket = this.model('no_ticket');
-    let dbData = await modelNoTicket.where({name: name, school: school, cetType: cetType}).find();
+    let dbData = await modelNoTicket.where({name: name, school: school, cetType: cetType, nth: nth}).find().catch(()=> false);
     let id = dbData && dbData.id;
     if (dbData && dbData.ticket) {
       if (cacheEnable) {
@@ -131,9 +134,9 @@ export default class extends think.controller.base {
         await this.cache(ticketCacheKey, ticket);
       }
       if (id) {
-        await modelNoTicket.where({id: id}).update({name: name, school: school, cetType: cetType, ticket: ticket});
+        await modelNoTicket.where({id: id}).update({name: name, school: school, cetType: cetType, ticket: ticket}).catch(()=>false);
       } else {
-        await modelNoTicket.add({name: name, school: school, cetType: cetType, ticket: ticket});
+        await modelNoTicket.add({name: name, school: school, cetType: cetType, ticket: ticket}).catch(()=>false);
       }
 
       return ticket;
@@ -160,7 +163,7 @@ export default class extends think.controller.base {
 
     //database
     let modelCet = this.model('cet');
-    let dbData = await modelCet.where({ticket: ticket}).find();
+    let dbData = await modelCet.where({ticket: ticket}).find().catch(()=>false);
     let gradeObj = {
       all: dbData && dbData.all,
       reading: dbData && dbData.reading,
@@ -191,7 +194,7 @@ export default class extends think.controller.base {
         reading: remoteGradeObj.reading,
         writing: remoteGradeObj.writing,
         school: school
-      });
+      }).catch(()=>{});;
 
       return remoteGradeObj;
     } else {
