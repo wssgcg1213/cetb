@@ -7,6 +7,7 @@ export default {
     INTERNAL_ERROR: [8002, "系统异常"],
     GRADE_NOT_FOUND: [8003, "没有找到你的成绩, 请检查并重试"],
     TICKET_NOT_FOUND: [8004, "没有找到你的准考证号, 请检查并重试"],
+    TICKET_NOT_VALID: [8005, "准考证号非法!"],
     METHOD_NOT_ALLOWED: [404, "this api is not allowed to access"],
     TOO_MANY_TIMES: [503, "you are trying too many times in a while"], //短时间内大量访问限制
     FUCK: [666, "FXXK YOU!"] //呵呵 ban

@@ -31,14 +31,15 @@ async function api99Sushe(name, ticket) {
   let listening = parseFloat(scoreArr[1]),
       writing = parseFloat(scoreArr[2]),
       reading = parseFloat(scoreArr[3]),
-      all = listening + writing + reading;
+      all = listening + writing + reading,
+      school = scoreArr[5];
   if (all == scoreArr[4]) {
-    return {
+    return [school, {
       listening: listening,
       writing: writing,
       reading: reading,
       all: all
-    }
+    }];
   } else {
     return false;
   }
@@ -55,6 +56,7 @@ async function apiChsi(name, ticket) {
     }
   });
   let $ = cheerio.load(bodyBuf);
+  let school = $('.cetTable tr:nth-child(2) td').text();
   let _rawStrArr = $('.cetTable tr:last-child').html().split("<br>");
   let scoreArr = _rawStrArr.map(s => {
     return (s.replace('color666', '')
@@ -67,12 +69,12 @@ async function apiChsi(name, ticket) {
       reading = parseFloat(scoreArr[2]),
       writing = parseFloat(scoreArr[3]);
   if (all === listening + reading + writing) {
-    return {
+    return [school, {
       listening: listening,
       writing: writing,
       reading: reading,
       all: all
-    }
+    }];
   } else {
     return false;
   }
@@ -151,7 +153,7 @@ export default class extends think.controller.base {
    * @param ticket
    * @returns {{reading: number, listening: number, writing: number, all: number}}
      */
-  async queryGrade(name, school, ticket) {
+  async queryGrade(name, ticket, school) {
     //cache
     const gradeCacheKey = `grade-${name}-${ticket}`;
     if (cacheEnable) {
@@ -170,21 +172,27 @@ export default class extends think.controller.base {
       writing: dbData && dbData.writing,
       listening: dbData && dbData.listening
     };
+    let returnObj = [dbData && dbData.school, gradeObj];
     if (dbData && dbData.all != null) {
       if (cacheEnable) {
-        await this.cache(gradeCacheKey, gradeObj);
+        await this.cache(gradeCacheKey, returnObj);
       }
-      return gradeObj;
+      return returnObj;
     }
 
     //remote
     let choose = Math.floor(Math.random() * apiSources.length);
     let _api = apiSources[choose];
-    let remoteGradeObj = await _api(name, ticket);
+    let _remoteGradeObj = await _api(name, ticket);
+    if ('object' !== typeof _remoteGradeObj) {
+      return false;
+    }
+    let remoteGradeObj = _remoteGradeObj[1];
+    school = school || _remoteGradeObj[0];
 
     if (remoteGradeObj && remoteGradeObj.all != null) {
       if (cacheEnable) {
-        await this.cache(gradeCacheKey, remoteGradeObj);
+        await this.cache(gradeCacheKey, _remoteGradeObj);
       }
       await modelCet.add({
         ticket: ticket,
@@ -194,9 +202,9 @@ export default class extends think.controller.base {
         reading: remoteGradeObj.reading,
         writing: remoteGradeObj.writing,
         school: school
-      }).catch(()=>{});;
+      }).catch(()=>{});
 
-      return remoteGradeObj;
+      return _remoteGradeObj;
     } else {
       return false;
     }

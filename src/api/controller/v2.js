@@ -34,8 +34,42 @@ export default class extends Base {
    * @param: 姓名, 准考证号
    * @return 考试成绩
    */
-  basicAction () {
-    this.success("ok");
+  async basicAction () {
+    let name = this.post('name').replace("\b", ''),
+        ticket = this.post('ticket').replace("\b", '');
+    //防止名字超长越界
+    if (!name || name.length > 15) {
+      this.fail('NAME_NOT_VALID');
+      return;
+    }
+
+    //防止名字超长越界
+    if (!ticket || ticket.length != 15) {
+      this.fail('TICKET_NOT_VALID');
+      return;
+    }
+
+    let gradeResult, grade, school;
+    try {
+      gradeResult = await this.queryGrade(name, ticket);
+      school = gradeResult && gradeResult[0];
+      grade = gradeResult && gradeResult[1];
+    } catch(e) {
+      console.log("错误!", e);
+      this.fail("INTERNAL_ERROR");
+      return;
+    }
+
+    if (!grade) {
+      this.fail('GRADE_NOT_FOUND');
+      return;
+    }
+    this.success({
+      name: name,
+      school: school,
+      ticket: this.rc4(ticket, rc4Pwd),
+      grade: this.rc4(JSON.stringify(grade), rc4Pwd)
+    }, rc4Pwd);
   }
 
   /**
@@ -65,14 +99,15 @@ export default class extends Base {
       return;
     }
 
-    let ticket, grade;
+    let ticket, gradeResult, grade;
     try {
       ticket = await this.noTicketQuery(cetType, name, school);
       if(!ticket) {
         return this.fail('TICKET_NOT_FOUND');
       }
 
-      grade = await this.queryGrade(name, school, ticket);
+      gradeResult = await this.queryGrade(name, ticket, school);
+      grade = gradeResult && gradeResult[1];
     } catch(e) {
       console.log("错误!", e);
       this.fail("INTERNAL_ERROR");
