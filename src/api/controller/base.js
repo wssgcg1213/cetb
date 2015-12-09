@@ -136,9 +136,9 @@ export default class extends think.controller.base {
         await this.cache(ticketCacheKey, ticket);
       }
       if (id) {
-        await modelNoTicket.where({id: id}).update({name: name, school: school, cetType: cetType, ticket: ticket}).catch(()=>false);
+        await modelNoTicket.where({id: id}).update({name: name, school: school, cetType: cetType, ticket: ticket, nth: nth}).catch(()=>false);
       } else {
-        await modelNoTicket.add({name: name, school: school, cetType: cetType, ticket: ticket}).catch(()=>false);
+        await modelNoTicket.add({name: name, school: school, cetType: cetType, ticket: ticket, nth: nth}).catch(()=>false);
       }
 
       return ticket;
