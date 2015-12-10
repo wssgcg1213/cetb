@@ -5,6 +5,8 @@
  */
 import nodemailer from 'nodemailer';
 import fs from 'fs';
+import path from 'path';
+
 const config = think.config();
 let mail = nodemailer.createTransport({
     host: config.mailHost,
@@ -14,10 +16,11 @@ let mail = nodemailer.createTransport({
         pass: config.mailPassword
     }
 });
+
 function fsLogStat (file, infoObj) {
     if (infoObj === undefined) {
         return new Promise((resolve, reject) => {
-            fs.readFile(__dirname + file, (err, content) => {
+            fs.readFile(path.join(think.ROOT_PATH, file), (err, content) => {
                 if (err) {
                     resolve(false);
                 } else {
@@ -28,7 +31,7 @@ function fsLogStat (file, infoObj) {
     }
     let str = JSON.stringify(infoObj);
     return new Promise((resolve, reject) => {
-        fs.appendFile(__dirname + file, str, (err, status) => {
+        fs.writeFile(path.join(think.ROOT_PATH, file), str, (err, status) => {
             if (err) {
                 resolve(false);
             } else {
