@@ -8,6 +8,10 @@ const searchUrl = 'http://find.cet.99sushe.com/search';
 const cacheEnable = (think.config('cache') || {useCache: false})['useCache'];
 const nth = think.config().nth;
 
+function getRandomIp() {
+  let range = (x, y) => Math.random() * (y - x) + x;
+  return `${Math.floor(range(0, 256))}.${Math.floor(range(0, 256))}.${Math.floor(range(0, 256))}.${Math.floor(range(0, 256))}`;
+}
 async function api99Sushe(name, ticket) {
   console.log("remote api call through 99Sushe", name, ticket);
   const url = "http://cet.99sushe.com/find";
@@ -52,7 +56,8 @@ async function apiChsi(name, ticket) {
     gzip: true,
     headers: {
       'Referer': 'http://www.chsi.com.cn/cet/',
-      'Accept-Encoding': 'gzip'
+      'Accept-Encoding': 'gzip',
+      'X-Forwarded-For': getRandomIp()
     }
   });
   let $ = cheerio.load(bodyBuf);
