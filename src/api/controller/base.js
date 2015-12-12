@@ -119,7 +119,12 @@ export default class extends think.controller.base {
     }
 
     let modelNoTicket = this.model('no_ticket');
-    let dbData = await modelNoTicket.where({name: name, school: school, cetType: cetType, nth: nth}).find().catch(()=> false);
+    let dbData;
+    try {
+      dbData = await modelNoTicket.where({name: name, school: school, cetType: cetType, nth: nth}).find();
+    } catch (e) {
+      dbData = false;
+    }
     let id = dbData && dbData.id;
     if (dbData && dbData.ticket) {
       if (cacheEnable) {
@@ -140,11 +145,14 @@ export default class extends think.controller.base {
       if (cacheEnable) {
         await this.cache(ticketCacheKey, ticket);
       }
-      if (id) {
-        await modelNoTicket.where({id: id}).update({name: name, school: school, cetType: cetType, ticket: ticket, nth: nth}).catch(()=>false);
-      } else {
-        await modelNoTicket.add({name: name, school: school, cetType: cetType, ticket: ticket, nth: nth}).catch(()=>false);
-      }
+
+      try {
+        if (id) {
+          await modelNoTicket.where({id: id}).update({name: name, school: school, cetType: cetType, ticket: ticket, nth: nth});
+        } else {
+          await modelNoTicket.add({name: name, school: school, cetType: cetType, ticket: ticket, nth: nth});
+        }
+      } catch (e) {}
 
       return ticket;
     } else {
@@ -170,7 +178,12 @@ export default class extends think.controller.base {
 
     //database
     let modelCet = this.model('cet');
-    let dbData = await modelCet.where({ticket: ticket}).find().catch(()=>false);
+    let dbData;
+    try {
+      dbData = await modelCet.where({ticket: ticket}).find();
+    } catch (e) {
+      dbData = false;
+    }
     let gradeObj = {
       all: dbData && dbData.all,
       reading: dbData && dbData.reading,
@@ -199,15 +212,18 @@ export default class extends think.controller.base {
       if (cacheEnable) {
         await this.cache(gradeCacheKey, _remoteGradeObj);
       }
-      await modelCet.add({
-        ticket: ticket,
-        name: name,
-        all: remoteGradeObj.all,
-        listening: remoteGradeObj.listening,
-        reading: remoteGradeObj.reading,
-        writing: remoteGradeObj.writing,
-        school: school
-      }).catch(()=>{});
+
+      try {
+        await modelCet.add({
+          ticket: ticket,
+          name: name,
+          all: remoteGradeObj.all,
+          listening: remoteGradeObj.listening,
+          reading: remoteGradeObj.reading,
+          writing: remoteGradeObj.writing,
+          school: school
+        });
+      } catch (e) {}
 
       return _remoteGradeObj;
     } else {
