@@ -2,7 +2,7 @@
   "apps": [{
     "name": "cetb",
     "script": "www/production.js",
-    "cwd": "/home/wssgcg1213/cetb/current",
+    "cwd": "/home/wssgcg1213/cetb",
     "exec_mode": "cluster",
     "instances": 0,
     "max_memory_restart": "1G",
