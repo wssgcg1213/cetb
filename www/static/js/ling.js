@@ -162,6 +162,10 @@ var api = {
             });
         }
 
+        function errorCallback () {
+            alert("网络故障, 请重试");
+        }
+
         var $$query = new Vue({
             el: "#query",
             data: {
@@ -198,6 +202,7 @@ var api = {
                         data: formData,
                         timeout: 3000,
                         success: querySuccessCallback,
+                        error: errorCallback,
                         beforeSend: function () {
                             $$query.loading = true;
                         },
@@ -256,6 +261,7 @@ var api = {
                         data: formData,
                         timeout: 3000,
                         success: querySuccessCallback,
+                        error: errorCallback,
                         beforeSend: function () {
                             $$noTicketQuery.loading = true;
                         },
