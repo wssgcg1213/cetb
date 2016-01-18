@@ -6,8 +6,8 @@
 'use strict';
 
 import Base from './base.js';
-const rc4Pwd = "合作请联系i@zeroling.com ";
-
+import cet from 'ling-cet-decoder';
+const rc4Pwd = "请联系i@ilcl.me";
 
 export default class extends Base {
 
@@ -125,6 +125,13 @@ export default class extends Base {
       ticket: this.rc4(ticket, rc4Pwd),
       grade: this.rc4(JSON.stringify(grade), rc4Pwd)
     }, rc4Pwd);
+  }
+
+  configAction () {
+    this.success({
+      province: cet.province,
+      date: "151"
+    });
   }
 
 }

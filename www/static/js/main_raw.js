@@ -350,5 +350,5 @@ $(".tabs li").click(function (e) {
     });
     e("input, select").on("touchstart touchend touchmove mousemove", function (e) {
         e.stopPropagation()
-    })
+    });
 })(jQuery, Vue);

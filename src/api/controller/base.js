@@ -62,13 +62,19 @@ async function apiChsi(name, ticket) {
   });
   let $ = cheerio.load(bodyBuf);
   let school = $('.cetTable tr:nth-child(2) td').text();
-  let _rawStrArr = $('.cetTable tr:last-child').html().split("<br>");
-  let scoreArr = _rawStrArr.map(s => {
-    return (s.replace('color666', '')
-        .replace(/[\t\n\r]*/g, '')
-        .replace(/&#([^;]+)/g, '')
-        .match(/([0-9]+)/g) || [false])[0];
-  });
+  let scoreArr;
+  try {
+    let _rawStrArr = $('.cetTable tr:last-child').html().split("<br>");
+    scoreArr = _rawStrArr.map(s => {
+      return (s.replace('color666', '')
+          .replace(/[\t\n\r]*/g, '')
+          .replace(/&#([^;]+)/g, '')
+          .match(/([0-9]+)/g) || [false])[0];
+    });
+  } catch (e) {
+    return false;
+  }
+
   let all = parseFloat(scoreArr[0]),
       listening = parseFloat(scoreArr[1]),
       reading = parseFloat(scoreArr[2]),
