@@ -129,7 +129,7 @@
                 </div>
             </div>
             <div class="swiper-slide">
-                <div class="animated query content-slide" id="noTicketQuery" v-show="show" v-transition="bounce" style="display: none">
+                <div class="animated query content-slide" id="noTicketQuery" v-show="show" v-transition="bounce">
                     <!-- 无准考证查询表单 -->
                     <form id="noTicketForm" >
                         <input type="text" name="username" class="input form-control" placeholder="请输入姓名" v-model="username">
@@ -185,7 +185,7 @@
     </div>
 
     <!--结果-->
-    <div class="animated" id="result" v-show="show" v-transition="bounce">
+    <div class="animated" id="result" v-show="show" v-transition="bounce" style="display: none">
         <div class="form-item cf">
             <div><span class="left">考生姓名：</span><span class="right orange">{{name}}</span></div>
         </div>
