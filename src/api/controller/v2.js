@@ -16,6 +16,9 @@ export default class extends Base {
    * @return {Promise} []
    */
   async __before(){
+    if (this.http.action === "config") {
+      return;
+    }
     //规则: 30s内只能访问5次
     const whiteList = {
       "127.0.0.1": true
