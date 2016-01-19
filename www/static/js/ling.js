@@ -10,6 +10,48 @@ var api = {
     noTicket: '/api/v2/noticket'
 };
 
+var store = (function (ls) {
+    function noop(){}
+    if ('object' !== typeof ls) {
+        return { set: noop, get: noop, getAll: noop, remove: noop, clear: noop };
+    }
+
+    var set = function (key, value) {
+        if (undefined == value) {
+            remove(key);
+        } else {
+            ls.setItem(key, JSON.stringify(value));
+        }
+    };
+    var get = function (key) {
+        var data = ls.getItem(key);
+        if ('string' !== typeof data) {
+            return undefined;
+        }
+        try {
+            return JSON.parse(data);
+        } catch (e) {
+            return data || undefined;
+        }
+    };
+    var getAll = function () {
+        var ret = {}, _key;
+        for (var i = 0; i < ls.length; i++) {
+            _key = ls.key(i);
+            ret[_key] = get(_key);
+        }
+        return ret;
+    };
+    var remove = function (key) {
+        return ls.removeItem(key);
+    };
+    var clear = function () {
+        return ls.clear();
+    };
+    return {
+        set: set, get: get, getAll: getAll, remove: remove, clear: clear
+    };
+})(window.localStorage);
 /**
  * swiper handle
  */
@@ -293,9 +335,23 @@ var api = {
     };
 
     //init render
+    if (store) {
+        var storeConfig = store.get('cet-config-store');
+        if (storeConfig) {
+            window.__config = storeConfig;
+            init();
+            return;
+        }
+
+    }
+
     if (!window.__config) {
-        window.init = init;
+        window.init = function () {
+            store && store.set('cet-config-store', window.__config);
+            init();
+        };
     } else {
+        store && store.set('cet-config-store', window.__config);
         init();
     }
 }(Zepto, Vue);

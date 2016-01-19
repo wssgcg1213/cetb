@@ -12,6 +12,27 @@ const rc4Pwd = "请联系i@ilcl.me";
 export default class extends Base {
 
   /**
+   * 前置方法
+   * @return {Promise} []
+   */
+  async __before(){
+    //规则: 30s内只能访问5次
+    const whiteList = {
+      "127.0.0.1": true
+    };
+    let ip = this.ip();
+    if (true !== whiteList[ip]) { //不在白名单里 查缓存
+      let cacheKey = `ip-${ip}`;
+      let cachedTimes = await this.cache(cacheKey) || 0;
+      if (cachedTimes < 5) {
+        await this.cache(cacheKey, cachedTimes + 1, {timeout: 30/* 单位：秒 */});
+      } else {
+        return this.fail("TOO_MANY_TIMES");
+      }
+    }
+  }
+
+  /**
    * index action
    * 不允许访问
    */
