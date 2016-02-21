@@ -152,12 +152,16 @@ export default class extends Base {
   }
 
   configAction () {
-    this.http.header('Access-Control-Allow-Origin', '*'); // 配置json可跨域, 为CDN做准备, 回源于此
     this.success({
       province: cet.province,
       date: pjson['enable'],
       enableNoTicket: pjson['enableNoTicket']
     });
+  }
+
+  config2Action () {
+    this.http.header('Access-Control-Allow-Origin', '*'); // 配置json可跨域, 为CDN做准备, 回源于此
+    this.configAction();
   }
 
 }
