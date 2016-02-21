@@ -158,10 +158,4 @@ export default class extends Base {
       enableNoTicket: pjson['enableNoTicket']
     });
   }
-
-  config2Action () {
-    this.http.header('Access-Control-Allow-Origin', '*'); // 配置json可跨域, 为CDN做准备, 回源于此
-    this.configAction();
-  }
-
 }
