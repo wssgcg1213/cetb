@@ -205,7 +205,8 @@ var store = (function (ls) {
         }
 
         function errorCallback () {
-            alert("网络故障, 请重试");
+            alert("由于网络波动查询失败, 现在为您跳转到 学信网 帮助您查询成绩!");
+            location.href = "http://www.chsi.com.cn/cet/";
         }
 
         var $$query = new Vue({
@@ -242,7 +243,7 @@ var store = (function (ls) {
                         url: api.basic,
                         type: "POST",
                         data: formData,
-                        timeout: 3000,
+                        timeout: 6000,
                         success: querySuccessCallback,
                         error: errorCallback,
                         beforeSend: function () {
