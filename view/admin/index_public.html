@@ -1,18 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <script>
-        var xhrConfig = new XMLHttpRequest();
-        xhrConfig.open('get', '/api/v2/config');
-        xhrConfig.addEventListener('readystatechange', function () {
-           if (xhrConfig.readyState === 4 && xhrConfig.status === 200) {
-               try {
-                   window.__config = JSON.parse(xhrConfig.responseText);
-               } catch (e) {}
-              typeof window.init === 'function' && window.init();
-           }
-        });
-        xhrConfig.send();
+        function loadConfig (cb) {
+            var xhrConfig = new XMLHttpRequest();
+            xhrConfig.open('get', '/api/v2/config');
+            xhrConfig.addEventListener('readystatechange', function () {
+                if (xhrConfig.readyState === 4 && xhrConfig.status === 200) {
+                    try {
+                        window.__config = JSON.parse(xhrConfig.responseText);
+                        cb && cb(window.__config);
+                    } catch (e) {}
+                    typeof window.init === 'function' && window.init();
+                }
+            });
+            xhrConfig.send();
+        }
+
+        if (window.localStorage && localStorage.getItem('cet-config-store')) {
+            // do nothing now
+        } else {
+            // pre ajax sent
+            loadConfig();
+        }
+
     </script>
     <meta charset="utf-8">
     <title>四六级考试成绩查询</title>
@@ -98,7 +109,7 @@
     </div>
 </div>
 <div class="container body loading">
-    <img class="top-img" src="/static/img/banner.png" width="100%"/>
+    <img class="top-img" src="http://lcldeyuqiu.b0.upaiyun.com/static/img/banner.png" width="100%"/>
     <nav class="tabs">
         <ul class="pager">
             <li class="previous active">
@@ -236,7 +247,8 @@
 <script src="//a.alipayobjects.com/??amui/zepto/1.1.3/zepto.js"></script>
 <script src="//cdn.bootcss.com/vue/1.0.14/vue.min.js"></script>
 <script src="//t.alipayobjects.com/images/rmsweb/T1qM0hXlxdXXXXXXXX.js" name="swiper"></script>
-<script src="/static/js/ling.1.0.3.min.js" charset="UTF-8"></script>
+<script src="/static/js/ling.1.0.4.min.js" charset="UTF-8"></script>
+<!--<script src="http://lcldeyuqiu.b0.upaiyun.com/static/js/ling.1.0.3.min.js" charset="UTF-8"></script>-->
 <script src="http://tajs.qq.com/stats?sId=50108466" charset="UTF-8"></script>
 </body>
 </html>

@@ -21,5 +21,13 @@
     "redis": "^2.3.0",
     "request-promise": "^1.0.2",
     "thinkjs": "2.1.x"
+  },
+
+  "//": "下面的是动态配置",
+  "config": {
+    "//": "启用的考试时间 eg.151表示15年第一次考试",
+    "enable": "151",
+    "//": "启用无准考证",
+    "enableNoTicket": true
   }
 }

@@ -4,10 +4,10 @@
  */
 
 'use strict';
-
 import Base from './base.js';
 import cet from 'ling-cet-decoder';
-const rc4Pwd = "请联系i@ilcl.me";
+const pjson = require(think.ROOT_PATH + '/package.json').config;
+const rc4Pwd = "请联系 i@ilcl.me";
 
 export default class extends Base {
 
@@ -152,9 +152,11 @@ export default class extends Base {
   }
 
   configAction () {
+    this.http.header('Access-Control-Allow-Origin', '*'); // 配置json可跨域, 为CDN做准备, 回源于此
     this.success({
       province: cet.province,
-      date: "151"
+      date: pjson['enable'],
+      enableNoTicket: pjson['enableNoTicket']
     });
   }
 

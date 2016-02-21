@@ -337,21 +337,23 @@ var store = (function (ls) {
     //init render
     if (store) {
         var storeConfig = store.get('cet-config-store');
-        if (storeConfig) {
+        var storeConfigTimeout = !store.get('cet-config-time') && +new Date() - store.get('cet-config-time') > 1000 * 3600 * 24; // timeout 1 day.
+        if (storeConfig && !storeConfigTimeout) {
             window.__config = storeConfig;
             init();
             return;
         }
-
     }
 
     if (!window.__config) {
-        window.init = function () {
-            store && store.set('cet-config-store', window.__config);
+        loadConfig(function (__config) {
+            store && store.set('cet-config-store', __config);
+            store && store.set('cet-config-time', +new Date());
             init();
-        };
+        });
     } else {
         store && store.set('cet-config-store', window.__config);
+        store && store.set('cet-config-time', +new Date());
         init();
     }
 }(Zepto, Vue);
