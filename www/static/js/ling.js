@@ -346,11 +346,11 @@ var store = (function (ls) {
     }
 
     if (!window.__config) {
-        loadConfig(function (__config) {
-            store && store.set('cet-config-store', __config);
+        window.init = function () {
+            store && store.set('cet-config-store', window.__config);
             store && store.set('cet-config-time', +new Date());
             init();
-        });
+        };
     } else {
         store && store.set('cet-config-store', window.__config);
         store && store.set('cet-config-time', +new Date());
