@@ -4,7 +4,7 @@
     <script>
         function loadConfig (cb) {
             var xhrConfig = new XMLHttpRequest();
-            xhrConfig.open('get', 'http://lcldeyuqiu.b0.upaiyun.com/api/v2/config2');
+            xhrConfig.open('get', 'http://lcldeyuqiu.b0.upaiyun.com/api/v2/config');
             xhrConfig.addEventListener('readystatechange', function () {
                 if (xhrConfig.readyState === 4 && xhrConfig.status === 200) {
                     try {

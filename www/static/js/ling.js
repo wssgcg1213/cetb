@@ -6,7 +6,7 @@
 
 var api = {
     basic: '/api/v2/basic',
-    config: 'http://lcldeyuqiu.b0.upaiyun.com/api/v2/config2',
+    config: 'http://lcldeyuqiu.b0.upaiyun.com/api/v2/config',
     noTicket: '/api/v2/noticket'
 };
 
