@@ -3,10 +3,11 @@ import cet from 'ling-cet-decoder';
 import request from 'request-promise';
 import iconv from 'iconv-lite';
 import cheerio from 'cheerio';
+const pjson = require(think.ROOT_PATH + '/package.json').config;
 
 const searchUrl = 'http://find.cet.99sushe.com/search';
 const cacheEnable = (think.config('cache') || {useCache: false})['useCache'];
-const nth = think.config().nth;
+const nth = pjson['enable'];
 
 function getRandomIp() {
   let range = (x, y) => Math.random() * (y - x) + x;
