@@ -1,4 +1,6 @@
-# CETB
+# CETB `[deprecated]`
+
+[cet.redrock-team.com](http://cet.redrock-team.com)
 
 cet 查询 后端 powered by nodejs (thinkjs).
 
