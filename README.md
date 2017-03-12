@@ -1,5 +1,7 @@
 # CETB `[deprecated]`
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/wssgcg1213/cetb.svg)](https://greenkeeper.io/)
+
 [cet.redrock-team.com](http://cet.redrock-team.com)
 
 cet 查询 后端 powered by nodejs (thinkjs).
